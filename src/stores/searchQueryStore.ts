@@ -1,11 +1,13 @@
 import { create } from "zustand";
-import { JobItem } from "../types";
+import { JobDetail, JobItem } from "../types";
 import { BASE_URL } from "../lib/constants";
 
 type Store = {
   jobItems: JobItem[];
   isLoading: boolean;
-  selectedJobItem: JobItem | undefined;
+  isLoadingDetail: boolean;
+  selectedJobItem: JobDetail | undefined;
+  selectedJobItemId: number;
   searchRequest: (query: string) => Promise<void>;
   setSelectedJobItem: (id: number) => void;
 };
@@ -14,6 +16,8 @@ export const searchQueryStore = create<Store>((set) => ({
   jobItems: [],
   isLoading: false,
   selectedJobItem: undefined,
+  selectedJobItemId: 0,
+  isLoadingDetail: false,
   searchRequest: async (query: string) => {
     set(() => ({ isLoading: true }));
 
@@ -28,6 +32,8 @@ export const searchQueryStore = create<Store>((set) => ({
     set(() => ({ jobItems: data.jobItems, isLoading: false }));
   },
   setSelectedJobItem: async (id: number) => {
+    if (!id) return;
+    set(() => ({ selectedJobItemId: id, isLoadingDetail: true }));
     const response = await fetch(`${BASE_URL}/${id}`);
 
     if (!response.ok) {
@@ -36,6 +42,6 @@ export const searchQueryStore = create<Store>((set) => ({
     }
     const data = await response.json();
     console.log(data);
-    set(() => ({ selectedJobItem: data.jobItem }));
+    set(() => ({ selectedJobItem: data.jobItem, isLoadingDetail: false }));
   },
 }));
