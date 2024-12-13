@@ -3,12 +3,16 @@ import { JobItem } from "../types";
 
 type Store = {
   jobItems: JobItem[];
+  isLoading: boolean;
   searchRequest: (query: string) => Promise<void>;
 };
 
 export const searchQueryStore = create<Store>((set) => ({
   jobItems: [],
+  isLoading: false,
   searchRequest: async (query: string) => {
+    set(() => ({ isLoading: true }));
+
     const response = await fetch(
       `https://bytegrad.com/course-assets/projects/rmtdev/api/data?search=${query}`
     );
@@ -19,6 +23,6 @@ export const searchQueryStore = create<Store>((set) => ({
     }
 
     const data = await response.json();
-    set(() => ({ jobItems: data.jobItems }));
+    set(() => ({ jobItems: data.jobItems, isLoading: false }));
   },
 }));
