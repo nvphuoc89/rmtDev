@@ -1,12 +1,10 @@
-import { useSelectedJobItem } from "../lib/hooks";
-import { searchQueryStore } from "../stores/searchQueryStore";
+import { useActiveId, useJobItem } from "../lib/hooks";
 import BookmarkIcon from "./BookmarkIcon";
 import Spinner from "./Spinner";
 
 export default function JobDetailContent() {
-  useSelectedJobItem();
-  const jobItem = searchQueryStore((state) => state.selectedJobItem);
-  const isLoading = searchQueryStore((state) => state.isLoadingDetail);
+  const [activeId] = useActiveId();
+  const [jobItem, isLoading] = useJobItem(activeId);
 
   if (isLoading) return <LoadingJobContent />;
   if (!jobItem) return <EmptyJobContent />;

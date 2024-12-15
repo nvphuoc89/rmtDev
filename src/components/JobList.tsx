@@ -1,4 +1,4 @@
-import { searchQueryStore } from "../stores/searchQueryStore";
+import { useActiveId } from "../lib/hooks";
 import { JobItem } from "../types";
 import JobListItem from "./JobListItem";
 import Spinner from "./Spinner";
@@ -9,9 +9,7 @@ type JobListProps = {
 };
 
 export function JobList({ jobItems, isLoading }: JobListProps) {
-  const selectedJobItemId = searchQueryStore(
-    (state) => state.selectedJobItemId
-  );
+  const [activeId] = useActiveId();
 
   return (
     <ul className="job-list">
@@ -21,7 +19,7 @@ export function JobList({ jobItems, isLoading }: JobListProps) {
           <JobListItem
             key={jobItem.id}
             jobItem={jobItem}
-            isActive={jobItem.id === selectedJobItemId}
+            isActive={jobItem.id === activeId}
           />
         ))}
     </ul>

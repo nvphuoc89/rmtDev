@@ -1,27 +1,13 @@
-import { useDebouncedCallback } from "use-debounce";
 import { useState } from "react";
-import { searchQueryStore } from "../stores/searchQueryStore";
+import { useDebounced, useSearchRequest } from "../lib/hooks";
 
 export default function SearchForm() {
   const [searchText, setSearchText] = useState("");
-  const searchRequest = searchQueryStore((state) => state.searchRequest);
-
-  const debounced = useDebouncedCallback((value: string) => {
-    if (!value.trim()) return;
-    searchRequest(value);
-  }, 1000);
-
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-  };
-
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchText(event.target.value);
-    debounced(event.target.value);
-  };
+  const debouncedSearchText = useDebounced(searchText, 250);
+  useSearchRequest(debouncedSearchText);
 
   return (
-    <form action="#" className="search" onSubmit={handleSubmit}>
+    <form action="#" className="search" onSubmit={(e) => e.preventDefault()}>
       <button type="submit">
         <i className="fa-solid fa-magnifying-glass"></i>
       </button>
@@ -32,7 +18,7 @@ export default function SearchForm() {
         type="text"
         required
         placeholder="Find remote developer jobs..."
-        onChange={handleChange}
+        onChange={(e) => setSearchText(e.target.value)}
       />
     </form>
   );
