@@ -9,6 +9,7 @@ import BookmarksButton from "./BookmarksButton";
 import SearchForm from "./SearchForm";
 import Sidebar from "./Sidebar";
 import JobDetailContent from "./JobDetailContent";
+import { Toaster } from "react-hot-toast";
 
 function App() {
   const [searchText, setSearchText] = useState("");
@@ -29,6 +30,7 @@ function App() {
         <JobDetailContent />
       </Container>
       <Footer />
+      <Toaster position="top-right" />
     </>
   );
 }

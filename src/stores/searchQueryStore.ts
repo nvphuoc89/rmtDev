@@ -1,44 +1,44 @@
-import { create } from "zustand";
-import { JobItem } from "../types";
-import { BASE_URL } from "../lib/constants";
+// import { create } from "zustand";
+// import { JobItem } from "../types";
+// import { BASE_URL } from "../lib/constants";
 
-type Store = {
-  jobItems: JobItem[];
-  isLoading: boolean;
-  // selectedJobItem: JobDetail | undefined;
-  // selectedJobItemId: number;
-  searchRequest: (query: string) => Promise<void>;
-  // setSelectedJobItem: (id: number) => void;
-};
+// type Store = {
+//   jobItems: JobItem[];
+//   isLoading: boolean;
+//   // selectedJobItem: JobDetail | undefined;
+//   // selectedJobItemId: number;
+//   searchRequest: (query: string) => Promise<void>;
+//   // setSelectedJobItem: (id: number) => void;
+// };
 
-export const searchQueryStore = create<Store>((set) => ({
-  jobItems: [],
-  isLoading: false,
-  // selectedJobItem: undefined,
-  // selectedJobItemId: 0,
-  searchRequest: async (query: string) => {
-    set(() => ({ isLoading: true }));
+// export const searchQueryStore = create<Store>((set) => ({
+//   jobItems: [],
+//   isLoading: false,
+//   // selectedJobItem: undefined,
+//   // selectedJobItemId: 0,
+//   searchRequest: async (query: string) => {
+//     set(() => ({ isLoading: true }));
 
-    const response = await fetch(`${BASE_URL}?search=${query}`);
+//     const response = await fetch(`${BASE_URL}?search=${query}`);
 
-    if (!response.ok) {
-      console.error("Failed to fetch job items");
-      return;
-    }
+//     if (!response.ok) {
+//       console.error("Failed to fetch job items");
+//       return;
+//     }
 
-    const data = await response.json();
-    set(() => ({ jobItems: data.jobItems, isLoading: false }));
-  },
-  // setSelectedJobItem: async (id: number) => {
-  // if (!id) return;
-  // set(() => ({ selectedJobItemId: id, isLoadingDetail: true }));
-  // const response = await fetch(`${BASE_URL}/${id}`);
-  // if (!response.ok) {
-  //   console.error("Failed to fetch job items");
-  //   return;
-  // }
-  // const data = await response.json();
-  // console.log(data);
-  // set(() => ({ selectedJobItem: data.jobItem}));
-  // },
-}));
+//     const data = await response.json();
+//     set(() => ({ jobItems: data.jobItems, isLoading: false }));
+//   },
+//   // setSelectedJobItem: async (id: number) => {
+//   // if (!id) return;
+//   // set(() => ({ selectedJobItemId: id, isLoadingDetail: true }));
+//   // const response = await fetch(`${BASE_URL}/${id}`);
+//   // if (!response.ok) {
+//   //   console.error("Failed to fetch job items");
+//   //   return;
+//   // }
+//   // const data = await response.json();
+//   // console.log(data);
+//   // set(() => ({ selectedJobItem: data.jobItem}));
+//   // },
+// }));
