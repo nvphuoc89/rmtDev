@@ -1,11 +1,10 @@
-import { useState } from "react";
-import { useDebounced, useSearchRequest } from "../lib/hooks";
-
-export default function SearchForm() {
-  const [searchText, setSearchText] = useState("");
-  const debouncedSearchText = useDebounced(searchText, 250);
-  useSearchRequest(debouncedSearchText);
-
+export default function SearchForm({
+  searchText,
+  setSearchText,
+}: {
+  searchText: string;
+  setSearchText: React.Dispatch<React.SetStateAction<string>>;
+}) {
   return (
     <form action="#" className="search" onSubmit={(e) => e.preventDefault()}>
       <button type="submit">

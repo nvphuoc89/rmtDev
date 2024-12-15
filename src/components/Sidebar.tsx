@@ -1,13 +1,15 @@
-import { searchQueryStore } from "../stores/searchQueryStore";
+import { JobItem } from "../types";
 import JobList from "./JobList";
 import PaginationControls from "./PaginationControls";
 import ResultsCount from "./ResultsCount";
 import SortingControls from "./SortingControls";
 
-export default function Sidebar() {
-  const jobItems = searchQueryStore((state) => state.jobItems);
-  const isLoading = searchQueryStore((state) => state.isLoading);
+type SideBarProps = {
+  jobItems: JobItem[];
+  isLoading: boolean;
+};
 
+export default function Sidebar({ jobItems, isLoading }: SideBarProps) {
   const jobItemsSliced = jobItems.slice(0, 7);
   return (
     <div className="sidebar">

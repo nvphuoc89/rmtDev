@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
-import { searchQueryStore } from "../stores/searchQueryStore";
 import { useQuery } from "@tanstack/react-query";
 import { BASE_URL } from "./constants";
-import { JobDetail } from "../types";
+import { JobDetail, JobItem } from "../types";
 
 export function useActiveId() {
   const [activeId, setActiveId] = useState<number | null>(null);
@@ -27,6 +26,10 @@ type JobItemResponse = {
 
 const fetchJobItem = async (id: number): Promise<JobItemResponse> => {
   const response = await fetch(`${BASE_URL}/${id}`);
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.description);
+  }
   const data = await response.json();
   return data;
 };
@@ -40,18 +43,42 @@ export function useJobItem(id: number | null) {
       refetchOnWindowFocus: false,
       retry: false,
       enabled: !!id,
-      onError: () => {},
+      // onError: (e) => console.log(e),
     }
   );
   return [data?.jobItem, isFetching] as const;
 }
 
-export function useSearchRequest(searchText: string) {
-  const searchRequest = searchQueryStore((state) => state.searchRequest);
-  useEffect(() => {
-    if (!searchText.trim()) return;
-    searchRequest(searchText);
-  }, [searchText, searchRequest]);
+type JobItemsResponse = {
+  jobItems: JobItem[];
+  public: boolean;
+  sorted: boolean;
+};
+
+const fetchJobItems = async (searchText: string): Promise<JobItemsResponse> => {
+  const response = await fetch(`${BASE_URL}?search=${searchText}`);
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.description);
+  }
+  const data = await response.json();
+  return data;
+};
+
+export function useJobItems(
+  searchText: string
+): readonly [JobItem[] | undefined, boolean] {
+  const { data, isFetching } = useQuery(
+    ["job-items", searchText],
+    () => fetchJobItems(searchText),
+    {
+      staleTime: 1000 * 60 * 60,
+      refetchOnWindowFocus: false,
+      retry: false,
+      enabled: !!searchText,
+    }
+  );
+  return [data?.jobItems, isFetching] as const;
 }
 
 export function useDebounced<T>(value: T, timeOut: number): T {
