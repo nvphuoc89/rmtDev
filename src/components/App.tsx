@@ -14,6 +14,8 @@ import SortingControls from "./SortingControls";
 import ResultsCount from "./ResultsCount";
 import JobList from "./JobList";
 import PaginationControls from "./PaginationControls";
+import { RESULT_PER_PAGE } from "../lib/constants";
+import { SortBy } from "../types";
 
 function App() {
   //state
@@ -21,11 +23,25 @@ function App() {
   const [currentPage, setCurrentPage] = useState(1);
   const debouncedSearchText = useDebounced(searchText, 750);
   const [jobItems, isLoading] = useJobItems(debouncedSearchText);
+  const [sortBy, setsortBy] = useState<SortBy>("relevant");
 
   //dervied / computed state
   const numberOfResults = jobItems?.length || 0;
-  const numberOfPages = Math.ceil(numberOfResults / 7);
-  const jobItemsSliced = jobItems?.slice(0, 7) || [];
+  const numberOfPages = Math.ceil(numberOfResults / RESULT_PER_PAGE);
+  const sortedJobItems =
+    jobItems?.sort((a, b) => {
+      if (sortBy === "relevant") {
+        return b.relevanceScore - a.relevanceScore;
+      } else if (sortBy === "recent") {
+        return a.daysAgo - b.daysAgo;
+      }
+      return 0;
+    }) || [];
+
+  const jobItemsSliced = sortedJobItems.slice(
+    (currentPage - 1) * RESULT_PER_PAGE,
+    currentPage * RESULT_PER_PAGE
+  );
 
   //event handlers / actions
   const handleChangePage = (direction: "next" | "prev") => {
@@ -34,6 +50,11 @@ function App() {
     } else if (direction === "next" && currentPage < numberOfPages) {
       setCurrentPage((prev) => prev + 1);
     }
+  };
+
+  const handleSortChange = (sortBy: SortBy) => {
+    setCurrentPage(1);
+    setsortBy(sortBy);
   };
 
   return (
@@ -50,12 +71,13 @@ function App() {
         <Sidebar>
           <SidebarTop>
             <ResultsCount count={numberOfResults} />
-            <SortingControls />
+            <SortingControls sortBy={sortBy} onClick={handleSortChange} />
           </SidebarTop>
           <JobList jobItems={jobItemsSliced} isLoading={isLoading} />
           <PaginationControls
             onClick={handleChangePage}
             currentPage={currentPage}
+            numberOfPages={numberOfPages}
           />
         </Sidebar>
         <JobDetailContent />
