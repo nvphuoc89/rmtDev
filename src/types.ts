@@ -19,3 +19,5 @@ export type JobDetail = JobItem & {
 };
 
 export type SortBy = "relevant" | "recent";
+
+export type Direction = "next" | "prev";

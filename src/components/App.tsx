@@ -15,7 +15,7 @@ import ResultsCount from "./ResultsCount";
 import JobList from "./JobList";
 import PaginationControls from "./PaginationControls";
 import { RESULT_PER_PAGE } from "../lib/constants";
-import { SortBy } from "../types";
+import { Direction, SortBy } from "../types";
 
 function App() {
   //state
@@ -28,15 +28,14 @@ function App() {
   //dervied / computed state
   const numberOfResults = jobItems?.length || 0;
   const numberOfPages = Math.ceil(numberOfResults / RESULT_PER_PAGE);
-  const sortedJobItems =
-    jobItems?.sort((a, b) => {
-      if (sortBy === "relevant") {
-        return b.relevanceScore - a.relevanceScore;
-      } else if (sortBy === "recent") {
-        return a.daysAgo - b.daysAgo;
-      }
-      return 0;
-    }) || [];
+  const sortedJobItems = [...(jobItems || [])].sort((a, b) => {
+    if (sortBy === "relevant") {
+      return b.relevanceScore - a.relevanceScore;
+    } else if (sortBy === "recent") {
+      return a.daysAgo - b.daysAgo;
+    }
+    return 0;
+  });
 
   const jobItemsSliced = sortedJobItems.slice(
     (currentPage - 1) * RESULT_PER_PAGE,
@@ -44,7 +43,7 @@ function App() {
   );
 
   //event handlers / actions
-  const handleChangePage = (direction: "next" | "prev") => {
+  const handleChangePage = (direction: Direction) => {
     if (direction === "prev" && currentPage > 1) {
       setCurrentPage((prev) => prev - 1);
     } else if (direction === "next" && currentPage < numberOfPages) {
