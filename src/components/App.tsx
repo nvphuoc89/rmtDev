@@ -3,7 +3,7 @@ import Background from "./Background";
 import Container from "./Container";
 import Footer from "./Footer";
 import Header, { HeaderTop } from "./Header";
-import { useDebounced, useJobItems } from "../lib/hooks";
+import { useDebounced, useSearchQuery, useLocalStorage } from "../lib/hooks";
 import Logo from "./Logo";
 import BookmarksButton from "./BookmarksButton";
 import SearchForm from "./SearchForm";
@@ -19,10 +19,10 @@ import { Direction, SortBy } from "../types";
 
 function App() {
   //state
-  const [searchText, setSearchText] = useState("");
+  const [searchText, setSearchText] = useLocalStorage("searchText", "");
   const [currentPage, setCurrentPage] = useState(1);
   const debouncedSearchText = useDebounced(searchText, 750);
-  const [jobItems, isLoading] = useJobItems(debouncedSearchText);
+  const [jobItems, isLoading] = useSearchQuery(debouncedSearchText);
   const [sortBy, setsortBy] = useState<SortBy>("relevant");
 
   //dervied / computed state

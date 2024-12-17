@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useContext, useEffect, useState } from "react";
+import { useQueries, useQuery } from "@tanstack/react-query";
 import { BASE_URL } from "./constants";
 import { JobDetail, JobItem } from "../types";
 import { handleError } from "./utils";
+import { BookmarksContext } from "../contexts/BookmarksContextProvider";
 
 export function useActiveId() {
   const [activeId, setActiveId] = useState<number | null>(null);
@@ -56,7 +57,7 @@ type JobItemsResponse = {
   sorted: boolean;
 };
 
-const fetchJobItems = async (searchText: string): Promise<JobItemsResponse> => {
+const fetchJobQuery = async (searchText: string): Promise<JobItemsResponse> => {
   const response = await fetch(`${BASE_URL}?search=${searchText}`);
   if (!response.ok) {
     const errorData = await response.json();
@@ -66,12 +67,12 @@ const fetchJobItems = async (searchText: string): Promise<JobItemsResponse> => {
   return data;
 };
 
-export function useJobItems(
+export function useSearchQuery(
   searchText: string
 ): readonly [JobItem[] | undefined, boolean] {
   const { data, isFetching } = useQuery(
     ["job-items", searchText],
-    () => fetchJobItems(searchText),
+    () => fetchJobQuery(searchText),
     {
       staleTime: 1000 * 60 * 60,
       refetchOnWindowFocus: false,
@@ -82,6 +83,27 @@ export function useJobItems(
   );
   return [data?.jobItems, isFetching] as const;
 }
+
+export const useJobItems = (ids: number[]) => {
+  const results = useQueries({
+    queries: ids.map((id) => ({
+      queryKey: ["job-item", id],
+      queryFn: () => fetchJobItem(id),
+      staleTime: 1000 * 60 * 60,
+      refetchOnWindowFocus: false,
+      retry: false,
+      enabled: !!id,
+      onError: (e: unknown) => handleError(e),
+    })),
+  });
+
+  const jobItems = results
+    .map((result) => result.data?.jobItem)
+    .filter((jobItem) => jobItem !== undefined);
+  const isLoading = results.some((result) => result.isFetching);
+
+  return [jobItems, isLoading] as const;
+};
 
 export function useDebounced<T>(value: T, timeOut: number): T {
   const [debounced, setDebounced] = useState<T>(value);
@@ -96,7 +118,7 @@ export function useDebounced<T>(value: T, timeOut: number): T {
 
 export function useLocalStorage<T>(key: string, initValue: T) {
   const [value, setValue] = useState<T>(() =>
-    JSON.parse(localStorage.getItem(key) || String(initValue))
+    JSON.parse(localStorage.getItem(key) || JSON.stringify(initValue))
   );
 
   useEffect(() => {
@@ -104,4 +126,12 @@ export function useLocalStorage<T>(key: string, initValue: T) {
   }, [key, value]);
 
   return [value, setValue] as const;
+}
+
+export function useBookmarksContext() {
+  const context = useContext(BookmarksContext);
+  if (!context) {
+    throw new Error("useBookmarks must be used within a BookmarksProvider");
+  }
+  return context;
 }
