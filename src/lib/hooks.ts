@@ -93,3 +93,15 @@ export function useDebounced<T>(value: T, timeOut: number): T {
 
   return debounced;
 }
+
+export function useLocalStorage<T>(key: string, initValue: T) {
+  const [value, setValue] = useState<T>(() =>
+    JSON.parse(localStorage.getItem(key) || String(initValue))
+  );
+
+  useEffect(() => {
+    localStorage.setItem(key, JSON.stringify(value));
+  }, [key, value]);
+
+  return [value, setValue] as const;
+}
