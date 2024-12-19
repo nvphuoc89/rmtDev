@@ -4,7 +4,9 @@ import { BASE_URL } from "./constants";
 import { JobDetail, JobItem } from "../types";
 import { handleError } from "./utils";
 import { BookmarksContext } from "../contexts/BookmarksContextProvider";
-import { ActiveIdContext } from "../contexts/ActiveIdContextProdivder";
+import { ActiveIdContext } from "../contexts/ActiveIdContextProvider";
+import { SearchTextContext } from "../contexts/SearchTextContextProvider";
+import { JobItemContext } from "../contexts/JobItemContextProvider";
 
 export function useActiveId() {
   const [activeId, setActiveId] = useState<number | null>(null);
@@ -167,6 +169,26 @@ export function useActiveIdContext() {
   if (!context) {
     throw new Error(
       "useActiveIdContext must be used within a useActiveIdProvider"
+    );
+  }
+  return context;
+}
+
+export function useSearchTextContext() {
+  const context = useContext(SearchTextContext);
+  if (!context) {
+    throw new Error(
+      "useSearchTextContext must be used within a useSearchTextProvider"
+    );
+  }
+  return context;
+}
+
+export function useJobItemContext() {
+  const context = useContext(JobItemContext);
+  if (!context) {
+    throw new Error(
+      "useJobItemContext must be used within a useJobItemContextProvider"
     );
   }
   return context;

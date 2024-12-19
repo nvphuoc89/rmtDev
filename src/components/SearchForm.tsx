@@ -1,10 +1,8 @@
-export default function SearchForm({
-  searchText,
-  setSearchText,
-}: {
-  searchText: string;
-  setSearchText: React.Dispatch<React.SetStateAction<string>>;
-}) {
+import { useSearchTextContext } from "../lib/hooks";
+
+export default function SearchForm() {
+  const { searchText, handleChangeSearchText } = useSearchTextContext();
+
   return (
     <form action="#" className="search" onSubmit={(e) => e.preventDefault()}>
       <button type="submit">
@@ -17,7 +15,7 @@ export default function SearchForm({
         type="text"
         required
         placeholder="Find remote developer jobs..."
-        onChange={(e) => setSearchText(e.target.value)}
+        onChange={(e) => handleChangeSearchText(e.target.value)}
       />
     </form>
   );
