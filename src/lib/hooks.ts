@@ -4,6 +4,7 @@ import { BASE_URL } from "./constants";
 import { JobDetail, JobItem } from "../types";
 import { handleError } from "./utils";
 import { BookmarksContext } from "../contexts/BookmarksContextProvider";
+import { ActiveIdContext } from "../contexts/ActiveIdContextProdivder";
 
 export function useActiveId() {
   const [activeId, setActiveId] = useState<number | null>(null);
@@ -157,6 +158,16 @@ export function useBookmarksContext() {
   const context = useContext(BookmarksContext);
   if (!context) {
     throw new Error("useBookmarks must be used within a BookmarksProvider");
+  }
+  return context;
+}
+
+export function useActiveIdContext() {
+  const context = useContext(ActiveIdContext);
+  if (!context) {
+    throw new Error(
+      "useActiveIdContext must be used within a useActiveIdProvider"
+    );
   }
   return context;
 }
